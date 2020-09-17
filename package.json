@@ -1,0 +1,24 @@
+{
+  "name": "Desafio_BackEnd",
+  "version": "1.0.0",
+  "description": "",
+  "main": "desafioBack.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EdmarAJr/Desafio_BackEnd.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EdmarAJr/Desafio_BackEnd/issues"
+  },
+  "homepage": "https://github.com/EdmarAJr/Desafio_BackEnd#readme",
+  "dependencies": {
+    "koa": "^2.13.0",
+    "koa-bodyparser": "^4.3.0"
+  }
+}
