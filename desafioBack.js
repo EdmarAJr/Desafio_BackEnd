@@ -66,7 +66,7 @@ const adicionarProduto = (ctx) => {
     }
 
     const produto = {
-        id: "", //ver pq id não gera automaticamente
+        id: pedido.length + 1,
         nome: body.nome,
         quantidadeDisponivel: body.quantidadeDisponivel,
         valor: body.valor,
@@ -85,7 +85,7 @@ const atualizarCarrinho = (ctx) => {
         formatarErro(ctx, "Seu carrinho está vazio", 400);
     }
     if (id) {
-        const produtoAtual = pedido[id];
+        const produtoAtual = pedido[id - 1]; //conferir depois
         if (produtoAtual) {
             const pedidoAtualizado = {
                 id: Number (id),
@@ -103,11 +103,48 @@ const atualizarCarrinho = (ctx) => {
     }
 };
 
-const rotasPedidos = (ctx) => {
+const deletarProdutoDoCarrinho = (ctx) => {
+    const id = ctx.url.split("/")[2];
+    const body = ctx.request.body;
+    
+    if (typeof body.estado !== 'boolean') {
+        formatarErro(ctx, "Pedido mal-formatado", 400);
+        return;
+    }
+
+    if (id) {
+        const produtoAtual = pedido[id - 1];
+        if(produtoAtual) {
+            const pedidoAtualizado = {
+                id: produtoAtual.id,
+                nome: produtoAtual.nome,
+                quantidadeDisponivel: produtoAtual.quantidadeDisponivel,
+                valor: produtoAtual.valor,
+                deletado: body.estado,
+            };
+           
+            pedido[id - 1] = pedidoAtualizado;
+
+            return pedidoAtualizado;
+        }
+    }
+};
+
+const rotasPedidos = (ctx, path) => {
     switch (ctx.method) {
         case "GET":
-            const pedido = obterPedido();
-            formatarSucesso(ctx, pedido);
+            const id = path[2];
+            if (id) {
+                const produtoAtual = pedido[id - 1];
+                if (produtoAtual) {
+                    formatarSucesso(ctx, produtoAtual);
+                } else {
+                    formatarErro(ctx, "Carrinho não encontrado", 404)
+                }
+            } else {
+                const pedido = obterPedido();
+                formatarSucesso(ctx, pedido);
+            }
             break;
         case "POST":
             const produto = adicionarProduto(ctx);
@@ -123,6 +160,11 @@ const rotasPedidos = (ctx) => {
             }
             break;
         case "DELETE":
+            const produtoDeletado = deletarProdutoDoCarrinho(ctx);
+            
+            if (produtoDeletado) {
+                formatarSucesso(ctx, produtoDeletado, 200);
+            }
             break;
         default:
             formatarErro(ctx, "Produto não disponível Teste1", 405)
@@ -137,7 +179,7 @@ const rotas = (ctx) => {
     if (path[1] === "produto") {
         rotasProdutos(ctx);
     } else if (path[1] === "pedido") {
-        rotasPedidos(ctx);
+        rotasPedidos(ctx, path);
     } else {
         //erro
     }
