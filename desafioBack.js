@@ -1,4 +1,8 @@
-//-------------------------------------------------------------não mexer está pronto-----------------------------------------------------------
+/*Nícolas, obrigado pela ajuda! Eu fiz o que pude e credito que por hora esse foi o meu limite técnico.
+Perdoe-me por não conseguir concluir o desafio como na Unidade1. Dei o meu melhor :)
+Se possível, na hora de corrigir os feedBack, por favor, indique-me onde eu posso melhorar e aprimorar o código.
+Não consegui comprrender muito bem a implementação da função adicionarProdutos e atualizarPedidos. Tentei, mas não consegui.
+*/
 const Koa = require('koa');
 const bodyparser = require('koa-bodyparser');
 
@@ -23,43 +27,12 @@ const formatarErro = (ctx, mensagem, status = 404) => {
         },
     }; 
 };
-//-------------------------------------------------------------não mexer está pronto-----------------------------------------------------------
-//Atenção: mudar o nome de produto para products
-//apagar depois
-const produto = {
-    id:"123",
-    nome:"",
-    quantidadeDisponivel:"",
-    valor: 0000,
-    deletado: false,
-};/*apagar depois*/
 
-//apagar depois
-const pedido = {
-    id: "1",
-    produtos: [],
-    estado: "em andamento",
-    idCliente: 01,
-    deletado: false,
-    valor_total: 000,
-};/*apagar depois*/
- 
-//Atenção: mudar o nome de produtos para products
 const produtos = [];
-/*apagar depois*/produtos.push(produto)/*como o produto vai ser adicionado*/ 
-
-//Atenção: mudar o nome de pedidos para orders
-
-/*apagar depois*/
 const pedidos = [];
+const estoque = [];
 
-pedidos.push(pedido);
- /*como o pedido vai ser adicionado*/ 
-
-const estoque = [];//rever
-estoque.push(produto);//rever
 /*(crud) Create Read Update Delete */
-//-------------------------------------------------------------não mexer Produto está pronto-----------------------------------------------------------
 //Métodos HTTP
 const obterProdutos = () => {
     return produtos.filter((produto) => !produto.deletado);
@@ -116,6 +89,7 @@ const atualizarProdutos = (ctx) => {
     const body = ctx.request.body;
     if (!body.nome && !body.quantidade && !body.valor) {
         formatarErro(ctx, "Pedido mal-formatado(função atualizarProdutos)", 400);
+        return;
     }
     if (id) {
         const produtoAtual = produtos[id - 1];
@@ -205,83 +179,58 @@ const rotasProdutos = (ctx, path) => {
             break;
     }
 };
-//-------------------------------------------------------------não mexer Produto está pronto-----------------------------------------------------------
-
-
 
 const obterPedidos = () => {
     return pedidos.filter((pedido) => !pedido.deletado && !pedido.incompleto);
 };
 
-//configurar adicionarPedidos 
 const adicionarPedidos = (ctx) => {
         const body = ctx.request.body;
     
-        if (!body.pedido || !body.valor_total) {
+        if (!body.idCliente) {
             formatarErro(ctx, "Pedido mal-formatado(função adicionarPedidos", 400);
             return;
         }
         const pedido = {
             id: pedidos.length + 1,
+            idCliente: body.idCliente,
             produtos: [],
-            estado: body.estado,
-            quantidade: body.quantidade,
-            valor: body.valor,
+            estado: "incompleto",
+            valor: 0,
             deletado: false,
         };
         pedidos.push(pedido);
-    
-        const pedidoNoEstoque = estoque[pedido.id - 1]; //ver se isso está certo depois
-        if (pedidoNoEstoque) {
-          if (pedidoNoEstoque.quantidade >= pedido.quantidade) {
-            estoque[pedido.id - 1].quantidade = estoque[pedido.id - 1].quantidade - pedido.quantidade;
-            const pedidoAtual = pedidos[id_pedido - 1];
-            if (pedidoAtual) {
-              const pedidoJaConstaNoPedido = pedidoAtual.pedidos.filter((pdt) => pdt.id === pedido.id).length > 0;
-              if (pedidoJaConstaNoPedido) {
-                for (let i = 0; i < pedidoAtual.pedidos.length; i++) {
-                  if (pedidoAtual.pedidos[i].id === pedido.id) {
-                      pedidoAtual.pedidos.splice(i, 1, {
-                      nome: pedido.nome,
-                      id: pedido.id,
-                      quantidade: pedidoAtual.pedidos[i].quantidade + pedido.quantidade,
-                    });
-                  }
-                }
-              } else {
-                pedidoAtual.pedidos.push(pedido);
-              }
-             
-              pedidoAtual.valor_total =
-                pedidoAtual.valor_total + pedido.valor * pedido.quantidade;
-              pedidos[pedidoAtual.id - 1] = pedidoAtual;
-            }
-          }
-        } 
+           
         return pedido;
     };
 
 const atualizarPedidos = (ctx) => {
     const id = ctx.url.split("/")[2];
     const body = ctx.request.body;
-    if (!body.estado) { //rever como obter o pedido
+    if (body.estado && body.produtos) { 
         formatarErro(ctx, "Pedido mal-formatado(função atualizarPedidos)", 400);
+        return;
     }
-    if (id) {
+   
+    if (id) { //verifica o estado ou produto
         const pedidoAtual = pedidos[id - 1];
         if (pedidoAtual) {
             const pedidoAtualizado = {       
                 id: Number (id),
-                produtos: body.pedido ? body.pedido : pedidoAtual.produtos, //rever como obter o pedido
-                idCliente: pedidoAtual.id,
-                estado: body.estado ? body.estado : pedidoAtual.estado, //rever como obter o pedido
-                valor: body.pedido ? body.pedido : pedidoAtual.valor, //rever como obter o pedido
+                produtos: body.produtos ? body.produtos : pedidoAtual.produtos, 
+                idCliente: body.id ? body.id : pedidoAtual.id,
+                estado: body.estado ? body.estado : pedidoAtual.estado, 
+                valor: body.pedido ? body.pedido : pedidoAtual.valor, 
                 deletado: pedidoAtual.deletado,
             };
-            pedido[id - 1] = pedidoAtualizado;
+            pedidos[id - 1] = pedidoAtualizado;
 
             return pedidoAtualizado;
-        }    
+        }
+            pedidos[id - 1] = pedidoAtualizado;
+
+            return pedidoAtualizado;
+            
     } else {
         formatarErro(ctx, "Pedido mal-formatado(função atualizarPedidos)", 400);
     }
@@ -291,7 +240,7 @@ const deletarPedidoDePedidos = (ctx) => {
     const id = ctx.url.split("/")[2];
     const body = ctx.request.body;
     
-    if (typeof body.estado !== 'boolean') {
+    if (typeof body.deletado !== 'boolean') {
         formatarErro(ctx, "Pedido mal-formatado(função deletarProdutoDeProdutos)", 400);
         return;
     }
@@ -308,7 +257,7 @@ const deletarPedidoDePedidos = (ctx) => {
                 estado: body.estado ? body.estado : pedidoAtual.estado, 
                 quantidade: pedidoAtual.quantidade, //rever
                 valor: body.pedido ? body.pedido : pedidoAtual.valor, //rever
-                deletado: body.estado,
+                deletado: body.deletado,
             };
            
             
@@ -364,7 +313,7 @@ const rotasPedidos = (ctx, path) => {
     }
 };
 
-//-------------------------------------------------------------não mexer está pronto-----------------------------------------------------------
+
 const rotas = (ctx) => {
     const path = ctx.url.split("/"); // ["", "produto / pedido", "1"]
 
@@ -380,8 +329,7 @@ const rotas = (ctx) => {
 
 server.use((ctx) => {
     rotas(ctx);
-    //ctx.body = "Rodando...";
+    
 });
 
 server.listen(8081, () => console.log("Servidor rodando..."));
-//-------------------------------------------------------------não mexer está pronto-----------------------------------------------------------
