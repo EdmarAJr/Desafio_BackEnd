@@ -1,7 +1,7 @@
 /*Nícolas, obrigado pela ajuda! Eu fiz o que pude e credito que por hora esse foi o meu limite técnico.
 Perdoe-me por não conseguir concluir o desafio como na Unidade1. Dei o meu melhor :)
 Se possível, na hora de corrigir os feedBack, por favor, indique-me onde eu posso melhorar e aprimorar o código.
-Não consegui comprrender muito bem a implementação da função adicionarProdutos e atualizarPedidos. Tentei, mas não consegui.
+Não consegui compreender muito bem a implementação da função adicionarProdutos e atualizarPedidos. Tentei, mas não consegui.
 */
 const Koa = require('koa');
 const bodyparser = require('koa-bodyparser');
